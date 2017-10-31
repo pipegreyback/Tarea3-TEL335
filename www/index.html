@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Tarea 3 Felipe Condon Silva</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+
+<body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.5/math.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	<script src="https://wzrd.in/standalone/function-plot@1.14.0"></script>
+	<script src="js/algebra.min.js"></script>
+
+	<div class="topnav" id="myTopnav">
+		<a href="#polinomio">Resolución de Polinomios</a>
+		<a href="#triangulo">Triangulos</a>
+	</div>
+
+	<div id="polinomio">
+		<h1>Resolucion De Polinomios</h1>
+		<div id="polinomio1">
+			<p>Son aceptados polinomios de primer, segundo y tercer grado. Es decir, sólamente serán calculados polinomios de la siguiente forma: <strong>ax+b</strong> , <strong>ax^2+bx+c</strong>, <strong>ax^3+bx^2+cx+d</strong>, en donde a,b,c,d son constantes
+				reales.
+			</p>
+			<strong>IMPORTANTE: Solo se calcularan las raices reales del polinomio ingresado.</strong>
+			<form id="form1">
+				<label for="eq1">Ingrese poliniomio:</label>
+				<input type="text" id="linearValue" value="3x^2+x-2" />
+				<input type="submit" value="Calcular raices y graficar" />
+			</form>
+			<span id="linearGraph"></span>
+			<strong id="linearRoot"></strong>
+		</div>
+	</div>
+	<hr>
+	<div id="triangulo">
+		<h1>Resolucion de triangulos rectángulos por teorema de Pitágoras.</h1>
+		<p><b>IMPORTANTE:</b> los valores de los catetos, <b>deben </b>ser valores naturales. Ej: 1,2,3,4,...</p>
+		<p>Ingrese valor de catetos para calcular la hipotenusa, el área y perímetro del triangulo rectángulo.</p>
+		<form id="triangleForm">
+			<label for="cat1">Ingrese el valor de un cateto:</label>
+			<input type="number" id="cat1" value="2" />
+			<label for="cat2">Ingrese el valor de un cateto:</label>
+			<input type="number" id="cat2" value="3" />
+			<input type="submit" value="Calcular Hipotenusa y datos">
+		</form>
+		<span id="triangleGraph"></span>
+		<strong id="triangleInfo"></strong>
+	</div>
+
+	<!--Grafico y calculo de funcion linear  -->
+	<script>
+		var Equation = algebra.Equation;
+		var target;
+		var functionId;
+
+		function draw(target, functionId) {
+			try {
+				functionPlot({
+					target: target,
+					data: [{
+						fn: document.getElementById(functionId).value,
+						sampler: 'builtIn',
+						graphType: 'polyline'
+					}]
+				});
+			} catch (err) {
+				console.log(err);
+				alert(err);
+			}
+		};
+
+		document.getElementById('form1').onsubmit = function(event) {
+			event.preventDefault();
+			draw('#linearGraph', 'linearValue');
+			var linearFunction = algebra.parse($('#linearValue').val());
+			var linearEquation = new Equation(linearFunction, 0);
+			var linearroot = linearEquation.solveFor("x");
+			$('#linearRoot').html('La(s) raiz(es) del polinomio es(son): ' + linearroot.toString());
+		};
+	</script>
+	<script>
+		function drawTriangle(target, cateto1, cateto2) {
+			try {
+				functionPlot({
+					target: target,
+					data: [{
+						points: [
+							[0,0],
+							[0, cateto1],
+							[cateto2, 0],
+							[0, 0]
+						],
+						fnType: 'points',
+						graphType: 'polyline',
+						closed: true
+					}]
+				})
+			} catch (err) {
+				console.log(err);
+				alert(err);
+			}
+		};
+		document.getElementById('triangleForm').onsubmit = function(event) {
+			var cateto1 = Number(($('#cat1').val()));
+			var cateto2 = Number(($('#cat2').val()));
+			event.preventDefault();
+			drawTriangle('#triangleGraph', cateto1, cateto2);
+			var hipotenusa = Math.sqrt(cateto1*cateto1+cateto2*cateto2);
+			var area = 0.5*cateto1*cateto2;
+			var perimetro = cateto1 + cateto2 + hipotenusa;
+			$('#triangleInfo').html('El valor de la hipotenusa es '+hipotenusa+ ', el área es '+ area + ' y el perimetro es '+ perimetro);
+		}
+	</script>
+</body>
+
+</html>
